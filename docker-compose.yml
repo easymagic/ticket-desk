@@ -1,0 +1,25 @@
+services:
+  pgsql:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ticket_desk
+      POSTGRES_USER: ticket
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - ticket_desk_pg:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticket -d ticket_desk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  ticket_desk_pg:
